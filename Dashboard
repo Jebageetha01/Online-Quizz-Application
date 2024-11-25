@@ -1,0 +1,48 @@
+import javax.swing.*;
+
+import java.awt.EventQueue;
+import java.awt.event.*;
+
+public class dashboard extends JFrame {
+    public dashboard() {
+        setTitle("Dashboard");
+        setBounds(100, 100, 400, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getContentPane().setLayout(null);
+
+        JLabel welcomeLabel = new JLabel("Welcome to the Quiz App!");
+        welcomeLabel.setBounds(100, 30, 200, 25);
+        getContentPane().add(welcomeLabel);
+
+        JButton btnAttendQuiz = new JButton("Attend Quiz");
+        btnAttendQuiz.setBounds(100, 80, 200, 30);
+        btnAttendQuiz.addActionListener(e -> openQuizApp());
+        getContentPane().add(btnAttendQuiz);
+
+        // Button to navigate to QuizManagement
+        JButton btnManageQuiz = new JButton("Manage Quiz");
+        btnManageQuiz.setBounds(100, 130, 200, 30);
+        btnManageQuiz.addActionListener(e -> openQuizManagement());
+        getContentPane().add(btnManageQuiz);
+    }
+
+    private void openQuizApp() {
+        this.dispose();
+        new QuizApp().setVisible(true); 
+    }
+    private void openQuizManagement() {
+        this.dispose(); 
+        new QuizManagement().setVisible(true); 
+    }
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater(() -> {
+            try {
+                dashboard frame = new dashboard();
+                frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+}
