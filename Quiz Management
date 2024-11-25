@@ -1,0 +1,135 @@
+import java.awt.EventQueue;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+public class QuizManagement extends JFrame {
+    private JPanel contentPane;
+    private JTextField questionTextField;
+    private JTextField option1Field, option2Field, option3Field, option4Field;
+    private JTextField correctAnswerField;
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater(() -> {
+            try {
+                QuizManagement frame = new QuizManagement();
+                frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public QuizManagement() {
+        setTitle("Quiz Management");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 600, 400);
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(contentPane);
+        contentPane.setLayout(null);
+
+        JLabel lblQuestion = new JLabel("Question:");
+        lblQuestion.setBounds(10, 10, 80, 25);
+        contentPane.add(lblQuestion);
+
+        questionTextField = new JTextField();
+        questionTextField.setBounds(100, 10, 200, 25);
+        contentPane.add(questionTextField);
+        questionTextField.setColumns(10);
+
+        JLabel lblOptions = new JLabel("Options:");
+        lblOptions.setBounds(10, 50, 80, 25);
+        contentPane.add(lblOptions);
+
+        option1Field = new JTextField();
+        option1Field.setBounds(100, 50, 200, 25);
+        contentPane.add(option1Field);
+
+        option2Field = new JTextField();
+        option2Field.setBounds(100, 80, 200, 25);
+        contentPane.add(option2Field);
+
+        option3Field = new JTextField();
+        option3Field.setBounds(100, 110, 200, 25);
+        contentPane.add(option3Field);
+
+        option4Field = new JTextField();
+        option4Field.setBounds(100, 140, 200, 25);
+        contentPane.add(option4Field);
+
+        JLabel lblCorrectAnswer = new JLabel("Correct Answer:");
+        lblCorrectAnswer.setBounds(10, 180, 100, 25);
+        contentPane.add(lblCorrectAnswer);
+
+        correctAnswerField = new JTextField();
+        correctAnswerField.setBounds(120, 180, 100, 25);
+        contentPane.add(correctAnswerField);
+
+        JButton btnSaveQuiz = new JButton("Save Quiz");
+        btnSaveQuiz.setBounds(320, 10, 100, 25);
+        btnSaveQuiz.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                saveQuiz();
+            }
+        });
+        contentPane.add(btnSaveQuiz);
+    }
+
+    private void saveQuiz() {
+        String questionText = questionTextField.getText();
+        String option1 = option1Field.getText();
+        String option2 = option2Field.getText();
+        String option3 = option3Field.getText();
+        String option4 = option4Field.getText();
+        String correctAnswer = correctAnswerField.getText();
+
+        try {
+            // Step 1: Insert question data into the database
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/users", "root", "Jebageetha2003@");
+            
+            // Insert question
+            String questionQuery = "INSERT INTO questions (question_text, correct_answer) VALUES (?, ?)";
+            PreparedStatement psQuestion = con.prepareStatement(questionQuery, Statement.RETURN_GENERATED_KEYS);
+            psQuestion.setString(1, questionText);
+            psQuestion.setString(2, correctAnswer);
+            psQuestion.executeUpdate();
+
+            // Get the generated question_id
+            ResultSet questionKeys = psQuestion.getGeneratedKeys();
+            int questionId = -1;
+            if (questionKeys.next()) {
+                questionId = questionKeys.getInt(1);
+            }
+
+            // Step 2: Insert options
+            String optionsQuery = "INSERT INTO options (question_id, option_text) VALUES (?, ?)";
+            PreparedStatement psOption = con.prepareStatement(optionsQuery);
+            psOption.setInt(1, questionId);
+            psOption.setString(2, option1);
+            psOption.executeUpdate();
+
+            psOption.setString(2, option2);
+            psOption.executeUpdate();
+
+            psOption.setString(2, option3);
+            psOption.executeUpdate();
+
+            psOption.setString(2, option4);
+            psOption.executeUpdate();
+
+            // Close connections
+            psQuestion.close();
+            psOption.close();
+            con.close();
+
+            JOptionPane.showMessageDialog(this, "Question saved successfully!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error saving question.");
+        }
+    }
+}
