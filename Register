@@ -1,0 +1,139 @@
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import java.awt.Toolkit;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import java.awt.Font;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.awt.event.ActionEvent;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.BorderLayout;
+
+public class RegisterForm extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+	protected static final Component btnValidate = null;
+	private JPanel contentPane;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JPasswordField passwordField;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					RegisterForm frame = new RegisterForm();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	 /**
+	 * Create the frame.
+	 */
+	public RegisterForm() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\hp\\Downloads\\download.png"));
+		setTitle("REGISTER");
+		JLabel lblNewLabel = new JLabel("New label");
+		getContentPane().add(lblNewLabel, BorderLayout.NORTH);
+		setFont(new Font("Viner Hand ITC", Font.BOLD, 14));
+		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\hp\\Downloads\\download.png"));
+		setTitle("REGISTER FORM");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setForeground(Color.WHITE);
+		contentPane.setBackground(Color.BLACK);
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JLabel lblNewLabel1 = new JLabel("Username");
+		lblNewLabel1.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		lblNewLabel1.setForeground(Color.WHITE);
+		lblNewLabel1.setBounds(34, 49, 68, 14);
+		contentPane.add(lblNewLabel1);
+		
+		JLabel lblNewLabel_1 = new JLabel("Email");
+		lblNewLabel_1.setForeground(Color.WHITE);
+		lblNewLabel_1.setBounds(34, 86, 46, 14);
+		contentPane.add(lblNewLabel_1);
+		
+		JLabel lblNewLabel_2 = new JLabel("Password");
+		lblNewLabel_2.setForeground(Color.WHITE);
+		lblNewLabel_2.setBackground(Color.WHITE);
+		lblNewLabel_2.setBounds(34, 101, 46, 60);
+		contentPane.add(lblNewLabel_2);
+		
+		textField = new JTextField();
+		textField.setBounds(181, 46, 86, 20);
+		contentPane.add(textField);
+		textField.setColumns(10);
+		
+		textField_1 = new JTextField();
+		textField_1.setBounds(181, 83, 86, 20);
+		contentPane.add(textField_1);
+		textField_1.setColumns(10);
+		
+		passwordField = new JPasswordField();
+		passwordField.setBounds(181, 121, 86, 20);
+		contentPane.add(passwordField);
+		
+		JButton btnNewButton = new JButton("Register");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/users","root","Jebageetha2003@");
+					String query = "INSERT INTO register (username, email, password) VALUES (?, ?, ?)";
+                    PreparedStatement ps = con.prepareStatement(query);
+                    ps.setString(1, textField.getText());
+                    ps.setString(2, textField_1.getText());
+                    ps.setString(3, passwordField.getText());
+                    int i = ps.executeUpdate();
+                    if (i > 0) {
+                        JOptionPane.showMessageDialog(null, "Record added successfully!");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Failed to register!");
+                    }
+                    ps.close();
+                    con.close();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error connecting to database!");
+                }
+            }
+        });
+		btnNewButton.setBounds(67, 188, 89, 23);
+		contentPane.add(btnNewButton);
+		
+		JButton btnNewButton_1 = new JButton("Sign in");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose(); 
+                Login loginPage = new Login(); 
+                loginPage.setVisible(true);
+            }
+        });
+		btnNewButton_1.setBounds(232, 188, 89, 23);
+		contentPane.add(btnNewButton_1);
+	}
+}
