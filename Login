@@ -1,0 +1,115 @@
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import java.awt.Toolkit;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import java.awt.Font;
+import javax.swing.JTextField;
+import java.awt.Color;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.awt.event.ActionEvent;
+
+public class Login extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	private JTextField textField;
+	private JTextField textField_1;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Login frame = new Login();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Login() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\hp\\Downloads\\download.png"));
+		setTitle("LOGIN");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBackground(Color.BLACK);
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JLabel username = new JLabel("Username");
+		username.setForeground(Color.WHITE);
+		username.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		username.setBounds(62, 69, 67, 14);
+		contentPane.add(username);
+		
+		JLabel password = new JLabel("Password");
+		password.setForeground(Color.WHITE);
+		password.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		password.setBounds(62, 121, 46, 14);
+		contentPane.add(password);
+		
+		textField = new JTextField();
+		textField.setBounds(199, 66, 86, 20);
+		contentPane.add(textField);
+		textField.setColumns(10);
+		
+		textField_1 = new JTextField();
+		textField_1.setBounds(199, 118, 86, 20);
+		contentPane.add(textField_1);
+		textField_1.setColumns(10);
+		
+		JButton btnNewButton = new JButton("Login");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+                    Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/users", "root", "Jebageetha2003@");
+                    
+                    String query = "SELECT * FROM register WHERE username=? AND password=?";
+                    PreparedStatement ps = con.prepareStatement(query);
+                    ps.setString(1, textField.getText());
+                    ps.setString(2, textField_1.getText());
+
+                    ResultSet rs = ps.executeQuery();
+
+                    if (rs.next()) {
+                        JOptionPane.showMessageDialog(null, "Login successful!");
+                        dispose(); 
+                        dashboard dashboardPage = new dashboard();
+                        dashboardPage.setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Invalid username or password!");
+                    }
+                    rs.close();
+                    ps.close();
+                    con.close();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error connecting to database!");
+                }
+            }
+        });
+		btnNewButton.setBounds(139, 194, 89, 23);
+		contentPane.add(btnNewButton);
+	}
+}
